@@ -36,7 +36,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Create deployment package
         run: |
@@ -48,14 +48,14 @@ jobs:
           aws lambda update-function-code \
             --function-name ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }} \
             --zip-file fileb://frontend-lambda.zip \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
         run: |
           aws lambda update-function-configuration \
             --function-name ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }} \
             --runtime python3.9 \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ vars.AWS_REGION }}
 
   deploy-txnsvc:
     name: Deploy Transaction Service Lambda
@@ -82,7 +82,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Create deployment package
         run: |
@@ -94,14 +94,14 @@ jobs:
           aws lambda update-function-code \
             --function-name ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }} \
             --zip-file fileb://txnsvc-lambda.zip \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
         run: |
           aws lambda update-function-configuration \
             --function-name ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }} \
             --runtime python3.9 \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ vars.AWS_REGION }}
 
   deploy-usersvc:
     name: Deploy User Service Lambda
@@ -128,7 +128,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Create deployment package
         run: |
@@ -140,11 +140,11 @@ jobs:
           aws lambda update-function-code \
             --function-name ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }} \
             --zip-file fileb://usersvc-lambda.zip \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
         run: |
           aws lambda update-function-configuration \
             --function-name ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }} \
             --runtime python3.9 \
-            --region ${{ env.AWS_REGION }}
+            --region ${{ vars.AWS_REGION }}
