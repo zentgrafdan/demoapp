@@ -37,16 +37,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Create deployment package
-        run: |
-          cd demofrontend
-          zip -r ../frontend-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
-
       - name: Deploy to Lambda
         uses: aws-actions/aws-lambda-deploy@v1
         with:
           function-name: ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }}
-          zip-file: frontend-lambda.zip
+          code-artifacts-dir: demofrontend
           region: ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
@@ -82,16 +77,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Create deployment package
-        run: |
-          cd demotxnsvc
-          zip -r ../txnsvc-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
-
       - name: Deploy to Lambda
         uses: aws-actions/aws-lambda-deploy@v1
         with:
           function-name: ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }}
-          zip-file: txnsvc-lambda.zip
+          code-artifacts-dir: demotxnsvc
           region: ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
@@ -127,16 +117,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Create deployment package
-        run: |
-          cd demousersvc
-          zip -r ../usersvc-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
-
       - name: Deploy to Lambda
         uses: aws-actions/aws-lambda-deploy@v1
         with:
           function-name: ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }}
-          zip-file: usersvc-lambda.zip
+          code-artifacts-dir: demousersvc
           region: ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
