@@ -9,5 +9,5 @@ def lambda_handler(event, context):
         'headers': {
             'Content-Type': 'application/json'
         },
-        'body': json.dumps('Hello from Lambda user service mock!')
+        'body': json.dumps('Hello from Lambda user service mock now auto deployed!')
     }
