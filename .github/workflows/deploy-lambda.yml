@@ -1,0 +1,150 @@
+name: Deploy Lambda Functions
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-1  # Change this to your AWS region
+
+jobs:
+  deploy-frontend:
+    name: Deploy Frontend Lambda
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          cd demofrontend
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt -t .
+          fi
+          pip install boto3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create deployment package
+        run: |
+          cd demofrontend
+          zip -r ../frontend-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://frontend-lambda.zip \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update Lambda configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }} \
+            --runtime python3.9 \
+            --region ${{ env.AWS_REGION }}
+
+  deploy-txnsvc:
+    name: Deploy Transaction Service Lambda
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          cd demotxnsvc
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt -t .
+          fi
+          pip install boto3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create deployment package
+        run: |
+          cd demotxnsvc
+          zip -r ../txnsvc-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://txnsvc-lambda.zip \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update Lambda configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }} \
+            --runtime python3.9 \
+            --region ${{ env.AWS_REGION }}
+
+  deploy-usersvc:
+    name: Deploy User Service Lambda
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          cd demousersvc
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt -t .
+          fi
+          pip install boto3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create deployment package
+        run: |
+          cd demousersvc
+          zip -r ../usersvc-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://usersvc-lambda.zip \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Update Lambda configuration
+        run: |
+          aws lambda update-function-configuration \
+            --function-name ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }} \
+            --runtime python3.9 \
+            --region ${{ env.AWS_REGION }}

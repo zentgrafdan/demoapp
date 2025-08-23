@@ -1,0 +1,2 @@
+# No external dependencies required for basic Lambda function
+# Add any additional packages here if needed in the future
