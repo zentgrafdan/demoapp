@@ -35,33 +35,34 @@ Your IAM user needs the following permissions:
 }
 ```
 
-## GitHub Repository Secrets
+## GitHub Repository Configuration
 
-Add these secrets to your GitHub repository (Settings → Secrets and variables → Actions):
-
-### Required Secrets:
+### Required Secrets (Settings → Secrets and variables → Actions):
 - `AWS_ACCESS_KEY_ID` - Your AWS access key
 - `AWS_SECRET_ACCESS_KEY` - Your AWS secret key
 - `FRONTEND_LAMBDA_FUNCTION_NAME` - Name of your frontend Lambda function
 - `TXNSVC_LAMBDA_FUNCTION_NAME` - Name of your transaction service Lambda function
 - `USERSVC_LAMBDA_FUNCTION_NAME` - Name of your user service Lambda function
 
-### Optional Configuration:
-- Update `AWS_REGION` in the workflow file if not using `us-east-1`
+### Required Variables (Settings → Secrets and variables → Actions):
+- `AWS_REGION` - Your AWS region (e.g., us-east-1, eu-west-1)
 
 ## How It Works
 
 1. **Trigger**: Workflow runs on push to main/master branch or pull requests
 2. **Dependencies**: Installs any requirements from `requirements.txt` files
 3. **Packaging**: Creates ZIP files for each service
-4. **Deployment**: Updates Lambda function code and configuration
-5. **Parallel Execution**: All three services deploy simultaneously
+4. **Deployment**: Uses official `aws-actions/aws-lambda-deploy` action
+5. **Configuration**: Updates Lambda runtime settings to Python 3.13
+6. **Parallel Execution**: All three services deploy simultaneously
 
 ## Workflow Features
 
+- **Official AWS Action**: Uses `aws-actions/aws-lambda-deploy` for reliable deployment
+- **Python 3.13 Runtime**: Latest Python version for optimal performance
 - **Automatic Dependency Management**: Installs packages from requirements.txt
 - **Clean Packaging**: Excludes unnecessary files (pyc, cache, git)
-- **Runtime Configuration**: Sets Python 3.9 runtime for all functions
+- **Runtime Configuration**: Sets Python 3.13 runtime for all functions
 - **Error Handling**: Each service deploys independently
 
 ## Customization
@@ -76,8 +77,9 @@ boto3==1.26.0
 ### Changing Python Version
 Update the `python-version` in the workflow file:
 ```yaml
-python-version: '3.10'  # or '3.11', '3.12'
+python-version: '3.12'  # or '3.11', '3.10'
 ```
+**Note**: Ensure your AWS Lambda functions support the Python version you choose.
 
 ### Adding Environment Variables
 To set Lambda environment variables, add this step after deployment:
@@ -87,7 +89,7 @@ To set Lambda environment variables, add this step after deployment:
     aws lambda update-function-configuration \
       --function-name ${{ secrets.FUNCTION_NAME }} \
       --environment Variables='{"KEY":"VALUE"}' \
-      --region ${{ env.AWS_REGION }}
+      --region ${{ vars.AWS_REGION }}
 ```
 
 ## Troubleshooting
@@ -97,7 +99,7 @@ To set Lambda environment variables, add this step after deployment:
 1. **Permission Denied**: Check IAM permissions
 2. **Function Not Found**: Verify function names in secrets
 3. **Deployment Package Too Large**: Check for unnecessary files
-4. **Runtime Mismatch**: Ensure Python version compatibility
+4. **Runtime Mismatch**: Ensure Python 3.13 is supported in your AWS region
 
 ### Debug Steps:
 
@@ -105,6 +107,7 @@ To set Lambda environment variables, add this step after deployment:
 2. Verify AWS credentials are correct
 3. Confirm Lambda function names exist
 4. Check AWS region configuration
+5. Verify Python 3.13 runtime support
 
 ## Security Notes
 

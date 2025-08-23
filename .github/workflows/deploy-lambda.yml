@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -29,7 +29,6 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt -t .
           fi
-          pip install boto3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -44,17 +43,17 @@ jobs:
           zip -r ../frontend-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
 
       - name: Deploy to Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://frontend-lambda.zip \
-            --region ${{ vars.AWS_REGION }}
+        uses: aws-actions/aws-lambda-deploy@v1
+        with:
+          function-name: ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }}
+          zip-file: frontend-lambda.zip
+          region: ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
         run: |
           aws lambda update-function-configuration \
             --function-name ${{ secrets.FRONTEND_LAMBDA_FUNCTION_NAME }} \
-            --runtime python3.9 \
+            --runtime python3.13 \
             --region ${{ vars.AWS_REGION }}
 
   deploy-txnsvc:
@@ -67,7 +66,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -75,7 +74,6 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt -t .
           fi
-          pip install boto3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -90,17 +88,17 @@ jobs:
           zip -r ../txnsvc-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
 
       - name: Deploy to Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://txnsvc-lambda.zip \
-            --region ${{ vars.AWS_REGION }}
+        uses: aws-actions/aws-lambda-deploy@v1
+        with:
+          function-name: ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }}
+          zip-file: txnsvc-lambda.zip
+          region: ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
         run: |
           aws lambda update-function-configuration \
             --function-name ${{ secrets.TXNSVC_LAMBDA_FUNCTION_NAME }} \
-            --runtime python3.9 \
+            --runtime python3.13 \
             --region ${{ vars.AWS_REGION }}
 
   deploy-usersvc:
@@ -113,7 +111,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.13'
 
       - name: Install dependencies
         run: |
@@ -121,7 +119,6 @@ jobs:
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt -t .
           fi
-          pip install boto3
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -136,15 +133,15 @@ jobs:
           zip -r ../usersvc-lambda.zip . -x "*.pyc" "__pycache__/*" "*.git*" "*.zip"
 
       - name: Deploy to Lambda
-        run: |
-          aws lambda update-function-code \
-            --function-name ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }} \
-            --zip-file fileb://usersvc-lambda.zip \
-            --region ${{ vars.AWS_REGION }}
+        uses: aws-actions/aws-lambda-deploy@v1
+        with:
+          function-name: ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }}
+          zip-file: usersvc-lambda.zip
+          region: ${{ vars.AWS_REGION }}
 
       - name: Update Lambda configuration
         run: |
           aws lambda update-function-configuration \
             --function-name ${{ secrets.USERSVC_LAMBDA_FUNCTION_NAME }} \
-            --runtime python3.9 \
+            --runtime python3.13 \
             --region ${{ vars.AWS_REGION }}
